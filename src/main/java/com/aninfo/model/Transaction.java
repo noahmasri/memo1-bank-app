@@ -1,18 +1,23 @@
 package com.aninfo.model;
 import javax.persistence.*;
+@Entity
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long txid;
     private Double value;
     private Long accCbu;
+    private TransType type;
 
-    public Transaction(Double value, Long cbu) {
+    public Transaction(Double value, Long accCbu, TransType type) {
         this.value = value;
-        this.accCbu = cbu;
+        this.accCbu = accCbu;
+        this.type = type;
     }
 
     public Double getValue(){ return this.value; }
 
     public Long getAccCbu(){ return this.accCbu; }
+
+
 }
