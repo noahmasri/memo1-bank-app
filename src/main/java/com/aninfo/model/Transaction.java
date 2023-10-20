@@ -4,7 +4,7 @@ import javax.persistence.*;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long txid;
+    private Long id;
     private Double value;
     private Long accCbu;
     private TransType type;
@@ -15,9 +15,12 @@ public class Transaction {
         this.type = type;
     }
 
-    public Double getValue(){ return this.value; }
+    public Double getValue(){ return value; }
 
-    public Long getAccCbu(){ return this.accCbu; }
+    public Long getAccCbu(){ return accCbu; }
 
+    public TransType getType(){ return type; }
+
+    public Long getId(){ return id; }
 
 }
