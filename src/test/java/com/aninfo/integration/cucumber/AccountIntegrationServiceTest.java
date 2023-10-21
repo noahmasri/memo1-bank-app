@@ -24,12 +24,12 @@ public class AccountIntegrationServiceTest {
 
     Account withdraw(Account account, Double sum) {
         transactionService.createTransactionFromValues(account.getCbu(), sum, TransType.WITHDRAW);
-        return account;
+        return accountService.findById(account.getCbu());
     }
 
     Account deposit(Account account, Double sum) {
         transactionService.createTransactionFromValues(account.getCbu(), sum, TransType.DEPOSIT);
-        return account;
+        return accountService.findById(account.getCbu());
     }
 
 }

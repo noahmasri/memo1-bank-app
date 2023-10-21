@@ -76,6 +76,7 @@ public class AccountService {
         }
 
         Account account = accountRepository.findAccountByCbu(cbu);
+        System.out.println(String.format("sum: %.2f", sum));
         account.setBalance(account.getBalance() + sum);
         accountRepository.save(account);
 
