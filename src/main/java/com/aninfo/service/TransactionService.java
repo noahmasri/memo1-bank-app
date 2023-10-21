@@ -2,6 +2,7 @@ package com.aninfo.service;
 
 import com.aninfo.exceptions.DepositNegativeSumException;
 import com.aninfo.exceptions.InsufficientFundsException;
+import com.aninfo.exceptions.InvalidTransactionIdException;
 import com.aninfo.exceptions.InvalidTransactionTypeException;
 import com.aninfo.model.Account;
 import com.aninfo.model.TransType;
@@ -18,13 +19,14 @@ import java.util.Optional;
 public class TransactionService {
     @Autowired
     private TransactionRepository transRepository;
+    @Autowired
     private AccountService accountService;
 
     public void save(Transaction transaction) {
         transRepository.save(transaction);
     }
     public Collection<Transaction> getTransactionsForAccount(Long accCbu) {
-        return transRepository.findTransactionsByAccCbu(accCbu);
+        return transRepository.findByAccCbu(accCbu);
     }
 
     public Double transValueWithPromoApplied(Double value){
@@ -34,7 +36,10 @@ public class TransactionService {
         return value + Math.min(value * 0.1, 500);
     }
     public Transaction createDeposit(Transaction transaction){
-        accountService.deposit(transaction.getAccCbu(), transaction.getValue());
+        System.out.println("yendo a depositar");
+        Double valWithPromo = transValueWithPromoApplied(transaction.getValue());
+        accountService.deposit(transaction.getAccCbu(), valWithPromo);
+        System.out.println("depositadooo");
         transaction.setValue(transValueWithPromoApplied(transaction.getValue()));
         return transRepository.save(transaction);
     }
@@ -54,6 +59,11 @@ public class TransactionService {
         }
     }
 
+    public Transaction createTransactionFromValues(Long accCbu, Double value, TransType type){
+        Transaction transaction = new Transaction(value, accCbu, type);
+        return createTransaction(transaction);
+    }
+
     // al borrar una cuenta, deberia borrar sus transacciones asociadas
     public void deleteTransactionsForAccount(Long accCbu) {
         Collection<Transaction> transactions = getTransactionsForAccount(accCbu);
@@ -61,8 +71,8 @@ public class TransactionService {
             deleteById(transaction.getId());
         }
     }
-    public Optional<Transaction> findById(Long txid) {
-        return transRepository.findById(txid);
+    public Transaction findById(Long txid) {
+        return transRepository.findById(txid).orElseThrow(() -> new InvalidTransactionIdException("No transaction found with that ID"));
     }
     public void deleteById(Long txid) {
         transRepository.deleteById(txid);

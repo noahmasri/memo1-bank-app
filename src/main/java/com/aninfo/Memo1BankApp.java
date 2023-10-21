@@ -1,6 +1,7 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.TransType;
 import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
 import com.aninfo.service.TransactionService;
@@ -46,21 +47,13 @@ public class Memo1BankApp {
 	}
 
 	@GetMapping("/accounts/{cbu}")
-	public ResponseEntity<Account> getAccount(@PathVariable Long cbu) {
-		Optional<Account> accountOptional = accountService.findById(cbu);
-		return ResponseEntity.of(accountOptional);
+	public Account getAccount(@PathVariable Long cbu) {
+		return accountService.findById(cbu);
 	}
 
 	@PutMapping("/accounts/{cbu}")
-	public ResponseEntity<Account> updateAccount(@RequestBody Account account, @PathVariable Long cbu) {
-		Optional<Account> accountOptional = accountService.findById(cbu);
-
-		if (!accountOptional.isPresent()) {
-			return ResponseEntity.notFound().build();
-		}
-		account.setCbu(cbu);
-		accountService.save(account);
-		return ResponseEntity.ok().build();
+	public Account updateAccount(@RequestBody Account account, @PathVariable Long cbu) {
+		return accountService.updateAccountCbu(account, cbu);
 	}
 
 	@DeleteMapping("/accounts/{cbu}")
@@ -69,14 +62,17 @@ public class Memo1BankApp {
 	}
 
 	@GetMapping("/accounts/{cbu}/transactions")
-	public Collection<Transaction> getAllTransactionsForAccount(@PathVariable Long cbu) {
+	public Collection<Transaction> getTransactionsForAccount(@PathVariable Long cbu) {
 		return transactionService.getTransactionsForAccount(cbu);
 	}
 
-	@PostMapping("/accounts/{cbu}/transactions")
+
+	@PostMapping("/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createTransaction(@RequestBody Transaction transaction) {
-		return transactionService.createTransaction(transaction);
+		System.out.println(String.format("acc cbu: %d, value: %.2f", transaction.getAccCbu(), transaction.getValue()));
+		Transaction response = transactionService.createTransaction(transaction);
+		return response;
 	}
 
 	@DeleteMapping("/transactions/{id}")
@@ -85,9 +81,8 @@ public class Memo1BankApp {
 	}
 
 	@GetMapping("/transactions/{id}")
-	public ResponseEntity<Transaction> getTransaction(@PathVariable Long id) {
-		Optional<Transaction> transactionOptional = transactionService.findById(id);
-		return ResponseEntity.of(transactionOptional);
+	public Transaction getTransaction(@PathVariable Long id) {
+		return transactionService.findById(id);
 	}
 
 
