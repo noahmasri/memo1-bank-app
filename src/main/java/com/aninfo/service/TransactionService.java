@@ -19,7 +19,7 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transRepository;
     private AccountService accountService;
-    
+
     public void save(Transaction transaction) {
         transRepository.save(transaction);
     }
@@ -27,11 +27,15 @@ public class TransactionService {
         return transRepository.findTransactionsByAccCbu(accCbu);
     }
 
+    public Double transValueWithPromoApplied(Double value){
+        if (value < 2000){
+            return value;
+        }
+        return value + Math.min(value * 0.1, 500);
+    }
     public Transaction createDeposit(Transaction transaction){
-        // promo
-        Double value = transaction.getValue() + Math.min(transaction.getValue() * 0.1, 500);
-        transaction.setValue(value);
         accountService.deposit(transaction.getAccCbu(), transaction.getValue());
+        transaction.setValue(transValueWithPromoApplied(transaction.getValue()));
         return transRepository.save(transaction);
     }
 
@@ -40,7 +44,6 @@ public class TransactionService {
         return transRepository.save(transaction);
     }
     public Transaction createTransaction(Transaction transaction){
-
         switch (transaction.getType()) {
             case DEPOSIT:
                 return createDeposit(transaction);
