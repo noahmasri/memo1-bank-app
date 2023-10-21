@@ -9,6 +9,8 @@ public class Transaction {
     private Long accCbu;
     private TransType type;
 
+    public Transaction() {
+    }
     public Transaction(Double value, Long accCbu, TransType type) {
         this.value = value;
         this.accCbu = accCbu;

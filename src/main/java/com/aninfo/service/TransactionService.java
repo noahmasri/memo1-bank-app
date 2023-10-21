@@ -1,19 +1,14 @@
 package com.aninfo.service;
 
-import com.aninfo.exceptions.DepositNegativeSumException;
-import com.aninfo.exceptions.InsufficientFundsException;
 import com.aninfo.exceptions.InvalidTransactionIdException;
 import com.aninfo.exceptions.InvalidTransactionTypeException;
-import com.aninfo.model.Account;
 import com.aninfo.model.TransType;
 import com.aninfo.model.Transaction;
-import com.aninfo.repository.AccountRepository;
 import com.aninfo.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 public class TransactionService {
@@ -26,7 +21,7 @@ public class TransactionService {
         transRepository.save(transaction);
     }
     public Collection<Transaction> getTransactionsForAccount(Long accCbu) {
-        return transRepository.findByAccCbu(accCbu);
+        return transRepository.findTransactionsByAccCbu(accCbu);
     }
 
     public Double transValueWithPromoApplied(Double value){
@@ -36,10 +31,9 @@ public class TransactionService {
         return value + Math.min(value * 0.1, 500);
     }
     public Transaction createDeposit(Transaction transaction){
-        System.out.println("yendo a depositar");
         Double valWithPromo = transValueWithPromoApplied(transaction.getValue());
         accountService.deposit(transaction.getAccCbu(), valWithPromo);
-        System.out.println("depositadooo");
+
         transaction.setValue(transValueWithPromoApplied(transaction.getValue()));
         return transRepository.save(transaction);
     }
@@ -59,9 +53,9 @@ public class TransactionService {
         }
     }
 
-    public Transaction createTransactionFromValues(Long accCbu, Double value, TransType type){
+    public void createTransactionFromValues(Long accCbu, Double value, TransType type){
         Transaction transaction = new Transaction(value, accCbu, type);
-        return createTransaction(transaction);
+        createTransaction(transaction);
     }
 
     // al borrar una cuenta, deberia borrar sus transacciones asociadas

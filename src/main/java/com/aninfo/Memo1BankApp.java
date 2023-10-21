@@ -29,6 +29,7 @@ public class Memo1BankApp {
 
 	@Autowired
 	private AccountService accountService;
+	@Autowired
 	private TransactionService transactionService;
 
 	public static void main(String[] args) {
@@ -58,6 +59,7 @@ public class Memo1BankApp {
 
 	@DeleteMapping("/accounts/{cbu}")
 	public void deleteAccount(@PathVariable Long cbu) {
+		transactionService.deleteTransactionsForAccount(cbu);
 		accountService.deleteById(cbu);
 	}
 
@@ -70,9 +72,7 @@ public class Memo1BankApp {
 	@PostMapping("/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createTransaction(@RequestBody Transaction transaction) {
-		System.out.println(String.format("acc cbu: %d, value: %.2f", transaction.getAccCbu(), transaction.getValue()));
-		Transaction response = transactionService.createTransaction(transaction);
-		return response;
+		return transactionService.createTransaction(transaction);
 	}
 
 	@DeleteMapping("/transactions/{id}")
