@@ -16,6 +16,7 @@ public class Transaction {
     }
 
     public Double getValue(){ return value; }
+    public void setValue(Double value){ this.value = value; }
 
     public Long getAccCbu(){ return accCbu; }
 
